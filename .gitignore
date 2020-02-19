@@ -1,5 +1,7 @@
 *.env
-data/
-logs/
-my.cnf
-redic.conf
+/data
+/logs
+*.cnf
+*.conf
+/mysql
+/redis

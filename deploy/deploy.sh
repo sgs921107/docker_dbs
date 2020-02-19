@@ -55,6 +55,12 @@ services="mysql redis"
 
 # ==========================配置结束==================================
 
+for service in $services
+do
+    mkdir -p ../$service/{data,logs}
+done
+
+
 # 声明变量
 install_docker_script=./install_docker.sh
 mysql_dir=../mysql
