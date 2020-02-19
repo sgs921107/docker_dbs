@@ -1,0 +1,45 @@
+# 配置文件版本
+version: "3"
+
+
+# 管理的服务
+services:
+
+    mysql:
+        image: mysql:${MYSQL_VERSION}
+        container_name: mysql_${MYSQL_VERSION}
+        ports:
+            - ${REAL_MYSQL_PORT}:3306
+        volumes:
+            - ${MYSQL_DIR}/data:/var/lib/mysql
+            - ${MYSQL_DIR}/my.cnf:/etc/mysql/my.cnf
+            - ${MYSQL_DIR}/logs:/logs
+        environment:
+            TZ: Asia/Shanghai
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200m"
+                max-file: "3"
+        restart: always
+
+
+    redis:
+        image: redis:${REDIS_VERSION}
+        container_name: redis_${REDIS_VERSION}
+        ports:
+            - ${REAL_REDIS_PORT}:6379
+        volumes:
+            - ${REDIS_DIR}/data:/data
+            - ${REDIS_DIR}/redis.conf:/etc/redis/redis.conf
+            - ${REDIS_DIR}/logs:/logs
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200m"
+                max-file: "3"
+        restart: always
+        command: ["redis-server", "/etc/redis/redis.conf"]
+
