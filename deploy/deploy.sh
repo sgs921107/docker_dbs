@@ -36,7 +36,7 @@ max_connections=500
 # 事务超时时间
 innodb_lock_wait_timeout=500
 # 处理时间超过多少秒标记为慢查询
-long_query_time=2
+long_query_time=1
 
 # 3.redis服务配置
 redis_bind=0.0.0.0
@@ -115,7 +115,7 @@ log_error=/logs/error.log
 slow_query_log_file=/logs/slow.log
 slow_query_log=on
 long_query_time=$long_query_time
-general_log=on
+general_log=off
 general_log_file=/logs/mysql.log
 log_bin=mysql_bin
 server_id=1
