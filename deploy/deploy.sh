@@ -35,8 +35,8 @@ innodb_rollback_on_timeout='ON'
 max_connections=500
 # 事务超时时间
 innodb_lock_wait_timeout=500
-# 编码
-charset=utf8mb4
+# 处理时间超过多少秒标记为慢查询
+long_query_time=2
 
 # 3.redis服务配置
 redis_bind=0.0.0.0
@@ -58,6 +58,7 @@ services="mysql redis"
 for service in $services
 do
     mkdir -p ../$service/{data,logs}
+    chmod o+w ../$service/logs
 done
 
 
@@ -98,24 +99,43 @@ REAL_REDIS_PORT=$REAL_REDIS_PORT
 " > .env
 
 echo "[mysqld]
-default-storage-engine=$default_storage_engine
-default-time-zone=$default_time_zone
+default_storage_engine=$default_storage_engine
+default_time_zone=$default_time_zone
 innodb_rollback_on_timeout=$innodb_rollback_on_timeout
 max_connections=$max_connections
 innodb_lock_wait_timeout=$innodb_lock_wait_timeout
-character-set-server=$charset
+character_set_server=utf8mb4
+collation_server=utf8mb4_unicode_ci
+init_connect='SET NAMES utf8mb4'
+explicit_defaults_for_timestamp=true
+skip_host_cache
+skip_name_resolve
+disable_partition_engine_check=1
+log_error=/logs/error.log
+slow_query_log_file=/logs/slow.log
+slow_query_log=on
+long_query_time=$long_query_time
+general_log=on
+general_log_file=/logs/mysql.log
+log_bin=mysql_bin
+server_id=1
+expire_logs_days=14
+max_binlog_size=100M
 
 [client]
-default-character-set=$charset
+default_character_set=utf8mb4
 
 [mysql]
-default-character-set=$charset
+default_character_set=utf8mb4
 " > $mysql_conf
 
 echo "daemonize no
 port 6379
 bind $redis_bind
 appendonly $appendonly
+
+loglevel notice
+logfile /logs/redis.log
 " > $redis_conf
 
 for service in $services
