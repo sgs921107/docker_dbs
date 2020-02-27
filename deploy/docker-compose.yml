@@ -34,7 +34,7 @@ services:
         volumes:
             - ${REDIS_DIR}/data:/data:rw
             - ${REDIS_DIR}/redis.conf:/etc/redis/redis.conf:ro
-            - ${REDIS_DIR}/logs:/logs:ro
+            - ${REDIS_DIR}/logs:/logs:rw
         logging:
             driver: "json-file"
             options:
