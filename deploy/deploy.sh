@@ -37,6 +37,7 @@ max_connections=500
 innodb_lock_wait_timeout=500
 # 处理时间超过多少秒标记为慢查询
 long_query_time=1
+mysql_bind=0.0.0.0
 
 # 3.redis服务配置
 redis_bind=0.0.0.0
@@ -121,6 +122,7 @@ log_bin=mysql_bin
 server_id=1
 expire_logs_days=14
 max_binlog_size=100M
+bind_address=$mysql_bind
 
 [client]
 default_character_set=utf8mb4
