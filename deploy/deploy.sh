@@ -17,7 +17,7 @@ REAL_MYSQL_PORT=3306
 # mysql root密码
 MYSQL_ROOT_PASSWORD=123456
 # 允许使用root用户访问mysql的ip地址
-MYSQL_ROOT_HOST=%
+MYSQL_ROOT_HOST=localhost
 
 # redis 版本
 REDIS_VERSION=latest
