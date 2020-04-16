@@ -32,9 +32,9 @@ default_time_zone='+8:00'
 # 事务超时后的回滚策略
 innodb_rollback_on_timeout='ON'
 # 最大连接数
-max_connections=500
+max_connections=2048
 # 事务超时时间
-innodb_lock_wait_timeout=500
+innodb_lock_wait_timeout=50
 # 处理时间超过多少秒标记为慢查询
 long_query_time=1
 mysql_bind=0.0.0.0
