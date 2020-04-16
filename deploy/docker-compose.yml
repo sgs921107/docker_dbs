@@ -12,7 +12,7 @@ services:
             - ${REAL_MYSQL_PORT}:3306
         volumes:
             - ${MYSQL_DIR}/data:/var/lib/mysql:rw
-            - ${MYSQL_DIR}/my.cnf:/etc/mysql/my.cnf:ro
+            - ${MYSQL_CONF}:/etc/mysql/my.cnf:ro
             - ${MYSQL_DIR}/logs:/logs:rw
         environment:
             TZ: Asia/Shanghai
@@ -33,7 +33,7 @@ services:
             - ${REAL_REDIS_PORT}:6379
         volumes:
             - ${REDIS_DIR}/data:/data:rw
-            - ${REDIS_DIR}/redis.conf:/etc/redis/redis.conf:ro
+            - ${REDIS_CONF}:/etc/redis/redis.conf:ro
             - ${REDIS_DIR}/logs:/logs:rw
         logging:
             driver: "json-file"
@@ -42,4 +42,38 @@ services:
                 max-file: "3"
         restart: always
         command: ["redis-server", "/etc/redis/redis.conf"]
+
+
+    es:
+        image: elasticsearch:${ES_VERSION}
+        container_name: es_${ES_VERSION}
+        privileged: true
+        user: root
+        ports:
+            - ${REAL_ES_PORT}:9200
+        volumes:
+            - ${ES_DIR}/data:/usr/share/elasticsearch/data:rw
+            - ${ES_CONF}:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+            - ${ES_DIR}/logs:/usr/share/elasticsearch/logs:rw
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200m"
+                max-file: "3"
+        restart: always
+
+
+    es_head:
+        image: mobz/elasticsearch-head:${ES_HEAD_VERSION}
+        container_name: es_head_${ES_HEAD_VERSION}
+        ports:
+            - ${REAL_ES_HEAD_PORT}:9100
+        volumes:
+            - ${ES_DIR}/logs:/logs
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200m"
+                max-file: "3"
+        restart: always
 

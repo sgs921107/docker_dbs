@@ -1,7 +1,9 @@
 *.env
-/data
-/logs
+/data/
+/logs/
 *.cnf
 *.conf
-/mysql
-/redis
+/mysql/
+/redis/
+/es/
+/es_head/

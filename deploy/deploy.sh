@@ -24,6 +24,16 @@ REDIS_VERSION=latest
 # 宿主机redis服务端口
 REAL_REDIS_PORT=6379
 
+# es 版本
+ES_VERSION=6.6.2
+# 宿主机redis服务端口
+REAL_ES_PORT=9200
+
+# es_head 版本
+ES_HEAD_VERSION=5
+# 宿主机redis服务端口
+REAL_ES_HEAD_PORT=9100
+
 # 2.mysql服务配置
 # 默认引擎
 default_storage_engine=INNODB
@@ -44,15 +54,16 @@ redis_bind=0.0.0.0
 # 是否持久化
 appendonly=yes
 
+# 4.es服务配置
+es_bind=0.0.0.0
+
 # 是否配置docker加速器 
 # 是否配置docker加速器   1/0
 docker_accelerator=1
-# 是否指定下载仓库      ""/或仓库地址
-docker_repository=hub.c.163.com/library
 # 是否指定pip的下载源
 pip_repository=https://pypi.tuna.tsinghua.edu.cn/simple
 # 启动的服务
-services="mysql redis"
+services="mysql redis es es_head"
 
 # ==========================配置结束==================================
 
@@ -60,6 +71,10 @@ for service in $services
 do
     mkdir -p ../$service/{data,logs}
     chmod o+w ../$service/logs
+    if [ $service = es ]
+    then
+        chmod 777 ../$service/{data,logs}
+    fi
 done
 
 
@@ -69,6 +84,9 @@ mysql_dir=../mysql
 mysql_conf=$mysql_dir/my.cnf
 redis_dir=../redis
 redis_conf=$redis_dir/redis.conf
+es_dir=../es
+es_conf=$es_dir/elasticsearch0.yml
+es_head_dir=../es_head
 
 if [ -n "$pip_repository" ]
 then
@@ -78,7 +96,10 @@ fi
 
 # 检查/安装docker和docker-compose
 sh $install_docker_script
-git checkout .
+if [ -n "$pip_repository" ]
+then
+    git checkout $install_docker_script
+fi
 
 if [ "$docker_accelerator" = 1 ]
 then
@@ -90,13 +111,24 @@ fi
 
 echo "MYSQL_VERSION=$MYSQL_VERSION
 MYSQL_DIR=$mysql_dir
+MYSQL_CONF=$mysql_conf
 REAL_MYSQL_PORT=$REAL_MYSQL_PORT
 MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
 MYSQL_ROOT_HOST=$MYSQL_ROOT_HOST
 
 REDIS_VERSION=$REDIS_VERSION
 REDIS_DIR=$redis_dir
+REDIS_CONF=$redis_conf
 REAL_REDIS_PORT=$REAL_REDIS_PORT
+
+ES_VERSION=$ES_VERSION
+ES_DIR=$es_dir
+ES_CONF=$es_conf
+REAL_ES_PORT=$REAL_ES_PORT
+
+ES_HEAD_VERSION=$ES_HEAD_VERSION
+ES_HEAD_DIR=$es_head_dir
+REAL_ES_HEAD_PORT=$REAL_ES_HEAD_PORT
 " > .env
 
 echo "[mysqld]
@@ -140,26 +172,21 @@ loglevel notice
 logfile /logs/redis.log
 " > $redis_conf
 
+echo "cluster.name: 'docker-cluster'
+network.host: $es_bind
+node.name: node0
+node.master: true
+node.data: true
+
+# 配置跨域
+http.cors.enabled: true
+http.cors.allow-origin: '*'
+" > $es_conf
+
 for service in $services
 do
-    if [ -n "$docker_repository" ]
-    then
-        case $service in
-            mysql)
-                service_version=$MYSQL_VERSION
-                service_port=$REAL_MYSQL_PORT
-                ;;
-            redis)
-                service_version=$REDIS_VERSION
-                service_port=$REAL_REDIS_PORT
-                ;;
-            *)
-                echo "unsupported the service: $service"
-        esac
-        docker pull $docker_repository/$service:$service_version
-        docker tag $docker_repository/$service:$service_version "$service-test":$service_version
-    fi
-    
+    upper_service=${service^^}
+    service_port=`eval echo '$'"REAL_${upper_service}_PORT"`
     # 启动服务
     docker-compose up -d $service
     # 添加端口到防火墙
