@@ -50,7 +50,8 @@ services:
         privileged: true
         user: root
         ports:
-            - ${REAL_ES_PORT}:9200
+            - ${REAL_ES_HTTP_PORT}:9200
+            - ${REAL_ES_TCP_PORT}:9300
         volumes:
             - ${ES_DIR}/data:/usr/share/elasticsearch/data:rw
             - ${ES_CONF}:/usr/share/elasticsearch/config/elasticsearch.yml:ro

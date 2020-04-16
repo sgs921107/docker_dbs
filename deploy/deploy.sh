@@ -27,7 +27,8 @@ REAL_REDIS_PORT=6379
 # es 版本
 ES_VERSION=6.6.2
 # 宿主机redis服务端口
-REAL_ES_PORT=9200
+REAL_ES_HTTP_PORT=9200
+REAL_ES_TCP_PORT=9300
 
 # es_head 版本
 ES_HEAD_VERSION=5
@@ -124,7 +125,8 @@ REAL_REDIS_PORT=$REAL_REDIS_PORT
 ES_VERSION=$ES_VERSION
 ES_DIR=$es_dir
 ES_CONF=$es_conf
-REAL_ES_PORT=$REAL_ES_PORT
+REAL_ES_TCP_PORT=$REAL_ES_TCP_PORT
+REAL_ES_HTTP_PORT=$REAL_ES_HTTP_PORT
 
 ES_HEAD_VERSION=$ES_HEAD_VERSION
 ES_HEAD_DIR=$es_head_dir
@@ -185,12 +187,20 @@ http.cors.allow-origin: '*'
 
 for service in $services
 do
-    upper_service=${service^^}
-    service_port=`eval echo '$'"REAL_${upper_service}_PORT"`
     # 启动服务
     docker-compose up -d $service
-    # 添加端口到防火墙
-    firewall-cmd --permanent --add-port=$service_port/tcp
+    upper_service=${service^^}
+    if [ $service = es ]
+    then
+        service_port1=`eval echo '$'"REAL_${upper_service}_TCP_PORT"`
+        service_port2=`eval echo '$'"REAL_${upper_service}_HTTP_PORT"`
+        firewall-cmd --permanent --add-port=$service_port1/tcp
+        firewall-cmd --permanent --add-port=$service_port2/tcp
+    else
+        service_port=`eval echo '$'"REAL_${upper_service}_PORT"`
+        # 添加端口到防火墙
+        firewall-cmd --permanent --add-port=$service_port/tcp
+    fi
 done
 
 # 重新加载防火墙
