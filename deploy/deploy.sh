@@ -54,6 +54,7 @@ mysql_bind=0.0.0.0
 redis_bind=0.0.0.0
 # 是否持久化
 appendonly=yes
+redis_passwd=qaz123
 
 # 4.es服务配置
 es_bind=0.0.0.0
@@ -167,6 +168,7 @@ default_character_set=utf8mb4
 
 echo "daemonize no
 port 6379
+requirepass $redis_passwd
 bind $redis_bind
 appendonly $appendonly
 
