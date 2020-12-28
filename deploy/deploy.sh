@@ -35,6 +35,15 @@ ES_HEAD_VERSION=5
 # 宿主机redis服务端口
 REAL_ES_HEAD_PORT=9100
 
+# mongo 版本
+MONGO_VERSION=latest
+# 宿主机mongo服务端口
+REAL_MONGO_PORT=27017
+# mongo root username
+MONGO_ROOT_USERNAME=admin
+# mongo root password
+MONGO_ROOT_PASSWORD=123456
+
 # 2.mysql服务配置
 # 默认引擎
 default_storage_engine=INNODB
@@ -59,13 +68,8 @@ redis_passwd=qaz123
 # 4.es服务配置
 es_bind=0.0.0.0
 
-# 是否配置docker加速器 
-# 是否配置docker加速器   1/0
-docker_accelerator=1
-# 是否指定pip的下载源
-pip_repository=https://pypi.tuna.tsinghua.edu.cn/simple
 # 启动的服务
-services="mysql redis es es_head"
+services="mysql redis es es_head mongo"
 
 # ==========================配置结束==================================
 
@@ -79,7 +83,6 @@ do
     fi
 done
 
-
 # 声明变量
 install_docker_script=./install_docker.sh
 mysql_dir=../mysql
@@ -89,27 +92,10 @@ redis_conf=$redis_dir/redis.conf
 es_dir=../es
 es_conf=$es_dir/elasticsearch0.yml
 es_head_dir=../es_head
+mongo_dir=../mongo
 
-if [ -n "$pip_repository" ]
-then
-    sed -i "s#pip install#pip install -i $pip_repository#g" $install_docker_script
-fi
-
-
-# 检查/安装docker和docker-compose
-sh $install_docker_script
-if [ -n "$pip_repository" ]
-then
-    git checkout $install_docker_script
-fi
-
-if [ "$docker_accelerator" = 1 ]
-then
-    echo '{"registry-mirrors":["https://docker.mirrors.ustc.edu.cn"]}' > /etc/docker/daemon.json
-    systemctl daemon-reload 
-    systemctl restart docker
-fi
-
+# 安装docker服务
+sh $install_docker_script || { echo "部署失败: 安装docker失败,请检查是否缺少依赖并重新运行部署脚本"; exit 1; }
 
 echo "MYSQL_VERSION=$MYSQL_VERSION
 MYSQL_DIR=$mysql_dir
@@ -132,6 +118,12 @@ REAL_ES_HTTP_PORT=$REAL_ES_HTTP_PORT
 ES_HEAD_VERSION=$ES_HEAD_VERSION
 ES_HEAD_DIR=$es_head_dir
 REAL_ES_HEAD_PORT=$REAL_ES_HEAD_PORT
+
+MONGO_VERSION=$MONGO_VERSION
+MONGO_DIR=$mongo_dir
+MONGO_ROOT_USERNAME=$MONGO_ROOT_USERNAME
+MONGO_ROOT_PASSWORD=$MONGO_ROOT_PASSWORD
+REAL_MONGO_PORT=$REAL_MONGO_PORT
 " > .env
 
 echo "[mysqld]

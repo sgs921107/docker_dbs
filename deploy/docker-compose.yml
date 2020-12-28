@@ -6,18 +6,18 @@ version: "3"
 services:
 
     mysql:
-        image: mysql:${MYSQL_VERSION}
-        container_name: mysql_${MYSQL_VERSION}
+        image: mysql:${MYSQL_VERSION:-5.7}
+        container_name: mysql_${MYSQL_VERSION:-5.7}
         ports:
-            - ${REAL_MYSQL_PORT}:3306
+            - ${REAL_MYSQL_PORT:-3306}:3306
         volumes:
             - ${MYSQL_DIR}/data:/var/lib/mysql:rw
             - ${MYSQL_CONF}:/etc/mysql/my.cnf:ro
             - ${MYSQL_DIR}/logs:/logs:rw
         environment:
             TZ: Asia/Shanghai
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-            MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+            MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST:-localhost}
         logging:
             driver: "json-file"
             options:
@@ -27,10 +27,10 @@ services:
 
 
     redis:
-        image: redis:${REDIS_VERSION}
-        container_name: redis_${REDIS_VERSION}
+        image: redis:${REDIS_VERSION:-latest}
+        container_name: redis_${REDIS_VERSION:-latest}
         ports:
-            - ${REAL_REDIS_PORT}:6379
+            - ${REAL_REDIS_PORT:-6379}:6379
         volumes:
             - ${REDIS_DIR}/data:/data:rw
             - ${REDIS_CONF}:/etc/redis/redis.conf:ro
@@ -45,13 +45,13 @@ services:
 
 
     es:
-        image: elasticsearch:${ES_VERSION}
-        container_name: es_${ES_VERSION}
+        image: elasticsearch:${ES_VERSION:-6.6.2}
+        container_name: es_${ES_VERSION:-6.6.2}
         privileged: true
         user: root
         ports:
-            - ${REAL_ES_HTTP_PORT}:9200
-            - ${REAL_ES_TCP_PORT}:9300
+            - ${REAL_ES_HTTP_PORT:-9200}:9200
+            - ${REAL_ES_TCP_PORT:-9300}:9300
         volumes:
             - ${ES_DIR}/data:/usr/share/elasticsearch/data:rw
             - ${ES_CONF}:/usr/share/elasticsearch/config/elasticsearch.yml:ro
@@ -65,12 +65,32 @@ services:
 
 
     es_head:
-        image: mobz/elasticsearch-head:${ES_HEAD_VERSION}
-        container_name: es_head_${ES_HEAD_VERSION}
+        image: mobz/elasticsearch-head:${ES_HEAD_VERSION:-5}
+        container_name: es_head_${ES_HEAD_VERSION:-5}
         ports:
-            - ${REAL_ES_HEAD_PORT}:9100
+            - ${REAL_ES_HEAD_PORT:-9100}:9100
         volumes:
             - ${ES_DIR}/logs:/logs
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200m"
+                max-file: "3"
+        restart: always
+
+
+    mongo:
+        image: mongo:${MONGO_VERSION:-latest}
+        container_name: mongo_${MONGO_VERSION:-latest}
+        ports:
+            - ${REAL_MONGO_PORT:-27017}:27017
+        volumes:
+            - ${MONGO_DIR}/data:/data/db:rw
+            - ${MONGO_DIR}/logs:/data/logs:rw
+        environment:
+            MONGO_INITDB_DATABASE: testDB
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
         logging:
             driver: "json-file"
             options:
