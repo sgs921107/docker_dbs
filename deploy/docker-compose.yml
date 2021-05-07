@@ -11,9 +11,9 @@ services:
         ports:
             - ${REAL_MYSQL_PORT:-3306}:3306
         volumes:
-            - ${MYSQL_DIR}/data:/var/lib/mysql:rw
+            - dbs-mysql:/var/lib/mysql:rw
             - ${MYSQL_CONF}:/etc/mysql/my.cnf:ro
-            - ${MYSQL_DIR}/logs:/logs:rw
+            - ${LOG_DIR:-/var/log/dbs}/mysql:/logs:rw
         environment:
             TZ: Asia/Shanghai
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
@@ -24,17 +24,18 @@ services:
                 max-size: "200m"
                 max-file: "3"
         restart: always
-
+        networks:
+            - dbs
 
     redis:
-        image: redis:${REDIS_VERSION:-latest}
-        container_name: redis_${REDIS_VERSION:-latest}
+        image: redis:${REDIS_VERSION:-5.0.12}
+        container_name: redis_${REDIS_VERSION:-5.0.12}
         ports:
             - ${REAL_REDIS_PORT:-6379}:6379
         volumes:
-            - ${REDIS_DIR}/data:/data:rw
+            - dbs-redis:/data:rw
             - ${REDIS_CONF}:/etc/redis/redis.conf:ro
-            - ${REDIS_DIR}/logs:/logs:rw
+            - ${LOG_DIR:-/var/log/dbs}/redis:/logs:rw
         logging:
             driver: "json-file"
             options:
@@ -42,7 +43,8 @@ services:
                 max-file: "3"
         restart: always
         command: ["redis-server", "/etc/redis/redis.conf"]
-
+        networks:
+            - dbs
 
     es:
         image: elasticsearch:${ES_VERSION:-6.6.2}
@@ -53,16 +55,17 @@ services:
             - ${REAL_ES_HTTP_PORT:-9200}:9200
             - ${REAL_ES_TCP_PORT:-9300}:9300
         volumes:
-            - ${ES_DIR}/data:/usr/share/elasticsearch/data:rw
+            - dbs-es:/usr/share/elasticsearch/data:rw
             - ${ES_CONF}:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-            - ${ES_DIR}/logs:/usr/share/elasticsearch/logs:rw
+            - ${LOG_DIR:-/var/log/dbs}/es:/usr/share/elasticsearch/logs:rw
         logging:
             driver: "json-file"
             options:
                 max-size: "200m"
                 max-file: "3"
         restart: always
-
+        networks:
+            - dbs
 
     es_head:
         image: mobz/elasticsearch-head:${ES_HEAD_VERSION:-5}
@@ -70,23 +73,24 @@ services:
         ports:
             - ${REAL_ES_HEAD_PORT:-9100}:9100
         volumes:
-            - ${ES_DIR}/logs:/logs
+            - ${LOG_DIR:-/var/log/dbs}/es_head:/logs
         logging:
             driver: "json-file"
             options:
                 max-size: "200m"
                 max-file: "3"
         restart: always
-
+        networks:
+            - dbs
 
     mongo:
-        image: mongo:${MONGO_VERSION:-latest}
-        container_name: mongo_${MONGO_VERSION:-latest}
+        image: mongo:${MONGO_VERSION:-4.4.5}
+        container_name: mongo_${MONGO_VERSION:-4.4.5}
         ports:
             - ${REAL_MONGO_PORT:-27017}:27017
         volumes:
-            - ${MONGO_DIR}/data:/data/db:rw
-            - ${MONGO_DIR}/logs:/data/logs:rw
+            - dbs-mongo:/data/db:rw
+            - ${LOG_DIR:-/var/log/dbs}/mongo:/data/logs:rw
         environment:
             MONGO_INITDB_DATABASE: testDB
             MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
@@ -97,4 +101,17 @@ services:
                 max-size: "200m"
                 max-file: "3"
         restart: always
+        networks:
+            - dbs
 
+networks:
+    dbs:
+        ipam:
+            driver: default
+
+
+volumes:
+    dbs-mysql: {}
+    dbs-redis: {}
+    dbs-es: {}
+    dbs-mongo: {}

@@ -7,120 +7,48 @@
 #!/bin/bash
 
 # ===================run the script with root user=================================
-# ==========================开始配置==================================
+# 1.首先根据conf/env_demo生成自己的env配置文件/etc/dbs/.env
+# 2.使用root用户执行此脚本
+# =================================================================================
 
-# 1.docker-compose.yml依赖配置
-# mysql 版本
-MYSQL_VERSION=5.7
-# 宿主机mysql服务端口
-REAL_MYSQL_PORT=3306
-# mysql root密码
-MYSQL_ROOT_PASSWORD=123456
-# 允许使用root用户访问mysql的ip地址
-MYSQL_ROOT_HOST=localhost
+source /etc/dbs/.env
 
-# redis 版本
-REDIS_VERSION=latest
-# 宿主机redis服务端口
-REAL_REDIS_PORT=6379
-
-# es 版本
-ES_VERSION=6.6.2
-# 宿主机redis服务端口
-REAL_ES_HTTP_PORT=9200
-REAL_ES_TCP_PORT=9300
-
-# es_head 版本
-ES_HEAD_VERSION=5
-# 宿主机redis服务端口
-REAL_ES_HEAD_PORT=9100
-
-# mongo 版本
-MONGO_VERSION=latest
-# 宿主机mongo服务端口
-REAL_MONGO_PORT=27017
-# mongo root username
-MONGO_ROOT_USERNAME=admin
-# mongo root password
-MONGO_ROOT_PASSWORD=123456
-
-# 2.mysql服务配置
-# 默认引擎
-default_storage_engine=INNODB
-# 默认时区
-default_time_zone='+8:00'
-# 事务超时后的回滚策略
-innodb_rollback_on_timeout='ON'
-# 最大连接数
-max_connections=2048
-# 事务超时时间
-innodb_lock_wait_timeout=50
-# 处理时间超过多少秒标记为慢查询
-long_query_time=1
-mysql_bind=0.0.0.0
-
-# 3.redis服务配置
-redis_bind=0.0.0.0
-# 是否持久化
-appendonly=yes
-redis_passwd=qaz123
-
-# 4.es服务配置
-es_bind=0.0.0.0
-
-# 启动的服务
-services="mysql redis es es_head mongo"
-
-# ==========================配置结束==================================
-
-for service in $services
-do
-    mkdir -p ../$service/{data,logs}
-    chmod o+w ../$service/logs
-    if [ $service = es ]
-    then
-        chmod 777 ../$service/{data,logs}
-    fi
-done
-
-# 声明变量
+# 配置文件目录
+conf_dir=../conf
+# 安装docker的脚本路径
 install_docker_script=./install_docker.sh
-mysql_dir=../mysql
-mysql_conf=$mysql_dir/my.cnf
-redis_dir=../redis
-redis_conf=$redis_dir/redis.conf
-es_dir=../es
-es_conf=$es_dir/elasticsearch0.yml
-es_head_dir=../es_head
-mongo_dir=../mongo
+# mysql配置文件路径
+mysql_conf=$conf_dir/my.cnf
+# redis配置文件路径
+redis_conf=$conf_dir/redis.conf
+# es配置文件路径
+es_conf=$conf_dir/elasticsearch0.yml
 
 # 安装docker服务
 sh $install_docker_script || { echo "部署失败: 安装docker失败,请检查是否缺少依赖并重新运行部署脚本"; exit 1; }
 
-echo "MYSQL_VERSION=$MYSQL_VERSION
-MYSQL_DIR=$mysql_dir
+echo "COMPOSE_PROJECT_NAME=dbs
+LOG_DIR=$DBS_LOG_DIR
+
+MYSQL_VERSION=$MYSQL_VERSION
 MYSQL_CONF=$mysql_conf
 REAL_MYSQL_PORT=$REAL_MYSQL_PORT
 MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
 MYSQL_ROOT_HOST=$MYSQL_ROOT_HOST
 
 REDIS_VERSION=$REDIS_VERSION
-REDIS_DIR=$redis_dir
 REDIS_CONF=$redis_conf
 REAL_REDIS_PORT=$REAL_REDIS_PORT
 
 ES_VERSION=$ES_VERSION
-ES_DIR=$es_dir
 ES_CONF=$es_conf
 REAL_ES_TCP_PORT=$REAL_ES_TCP_PORT
 REAL_ES_HTTP_PORT=$REAL_ES_HTTP_PORT
 
 ES_HEAD_VERSION=$ES_HEAD_VERSION
-ES_HEAD_DIR=$es_head_dir
 REAL_ES_HEAD_PORT=$REAL_ES_HEAD_PORT
 
 MONGO_VERSION=$MONGO_VERSION
-MONGO_DIR=$mongo_dir
 MONGO_ROOT_USERNAME=$MONGO_ROOT_USERNAME
 MONGO_ROOT_PASSWORD=$MONGO_ROOT_PASSWORD
 REAL_MONGO_PORT=$REAL_MONGO_PORT
@@ -181,6 +109,14 @@ http.cors.allow-origin: '*'
 
 for service in $services
 do
+    # 创建服务日志目录, 并添加写权限
+    service_log_dir="$DBS_LOG_DIR/$service"
+    if [ ! -d "$service_log_dir" ]
+    then
+        mkdir -p $service_log_dir
+    fi
+    chmod a+w $service_log_dir
+
     # 启动服务
     docker-compose up -d $service
     upper_service=${service^^}

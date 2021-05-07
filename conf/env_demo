@@ -1,0 +1,64 @@
+# 日志将存储至宿主机的此目录下
+DBS_LOG_DIR=/var/log/dbs
+
+# 1.docker-compose.yml依赖配置
+# mysql 版本
+MYSQL_VERSION=5.7
+# 宿主机mysql服务端口
+REAL_MYSQL_PORT=3306
+# mysql root密码
+MYSQL_ROOT_PASSWORD=123456
+# 允许使用root用户访问mysql的ip地址
+MYSQL_ROOT_HOST=localhost
+
+# redis 版本
+REDIS_VERSION=latest
+# 宿主机redis服务端口
+REAL_REDIS_PORT=6379
+
+# es 版本
+ES_VERSION=6.6.2
+# 宿主机redis服务端口
+REAL_ES_HTTP_PORT=9200
+REAL_ES_TCP_PORT=9300
+
+# es_head 版本
+ES_HEAD_VERSION=5
+# 宿主机redis服务端口
+REAL_ES_HEAD_PORT=9100
+
+# mongo 版本
+MONGO_VERSION=latest
+# 宿主机mongo服务端口
+REAL_MONGO_PORT=27017
+# mongo root username
+MONGO_ROOT_USERNAME=admin
+# mongo root password
+MONGO_ROOT_PASSWORD=123456
+
+# 2.mysql服务配置
+# 默认引擎
+default_storage_engine=INNODB
+# 默认时区
+default_time_zone='+8:00'
+# 事务超时后的回滚策略
+innodb_rollback_on_timeout='ON'
+# 最大连接数
+max_connections=2048
+# 事务超时时间
+innodb_lock_wait_timeout=50
+# 处理时间超过多少秒标记为慢查询
+long_query_time=1
+mysql_bind=0.0.0.0
+
+# 3.redis服务配置
+redis_bind=0.0.0.0
+# 是否持久化
+appendonly=yes
+redis_passwd=qaz123
+
+# 4.es服务配置
+es_bind=0.0.0.0
+
+# 启动的服务
+services="mysql redis es es_head mongo"
