@@ -37,7 +37,8 @@ then
     echo "未安装docker-compose, 即将进行安装"
     # 安装docker-compose
     # 下载docker-compose
-    curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    curl -L "https://get.daocloud.io/docker/compose/releases/download/1.29.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
+        || { echo "安装docker-compose失败: 下载失败"; exit 1; }
     # 添加可执行权限
     chmod +x /usr/local/bin/docker-compose
     # 创建软连接
