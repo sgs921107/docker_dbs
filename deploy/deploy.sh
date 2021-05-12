@@ -52,7 +52,13 @@ MONGO_VERSION=$MONGO_VERSION
 MONGO_ROOT_USERNAME=$MONGO_ROOT_USERNAME
 MONGO_ROOT_PASSWORD=$MONGO_ROOT_PASSWORD
 REAL_MONGO_PORT=$REAL_MONGO_PORT
-" > .env
+
+RABBITMQ_VERSION=$RABBITMQ_VERSION
+REAL_RABBITMQ_PORT=$REAL_RABBITMQ_PORT
+REAL_RABBITMQ_ADMIN_PORT=$REAL_RABBITMQ_ADMIN_PORT
+RABBITMQ_DEFAULT_USER=$RABBITMQ_DEFAULT_USER
+RABBITMQ_DEFAULT_PASS=$RABBITMQ_DEFAULT_PASS
+RABBITMQ_ERLANG_COOKIE=$RABBITMQ_ERLANG_COOKIE" > .env
 
 echo "[mysqld]
 default_storage_engine=$default_storage_engine
@@ -83,8 +89,7 @@ bind_address=$mysql_bind
 default_character_set=utf8mb4
 
 [mysql]
-default_character_set=utf8mb4
-" > $mysql_conf
+default_character_set=utf8mb4" > $mysql_conf
 
 echo "daemonize no
 port 6379
@@ -93,8 +98,7 @@ bind $redis_bind
 appendonly $appendonly
 
 loglevel notice
-logfile /logs/redis.log
-" > $redis_conf
+logfile /logs/redis.log" > $redis_conf
 
 echo "cluster.name: 'docker-cluster'
 network.host: $es_bind
@@ -104,8 +108,7 @@ node.data: true
 
 # 配置跨域
 http.cors.enabled: true
-http.cors.allow-origin: '*'
-" > $es_conf
+http.cors.allow-origin: '*'" > $es_conf
 
 for service in $services
 do

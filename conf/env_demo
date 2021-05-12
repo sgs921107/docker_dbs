@@ -36,6 +36,18 @@ MONGO_ROOT_USERNAME=admin
 # mongo root password
 MONGO_ROOT_PASSWORD=123456
 
+# rabbitmq 版本
+RABBITMQ_VERSION=3.8.16-management
+# 宿主机rabbitmq服务端口
+REAL_RABBITMQ_PORT=5672
+# 宿主机rabbitmq后台管理端口
+REAL_RABBITMQ_ADMIN_PORT=15672
+# rabbitmq后台管理账号密码
+RABBITMQ_DEFAULT_USER=work
+RABBITMQ_DEFAULT_PASS=online
+# erlang cookie
+RABBITMQ_ERLANG_COOKIE=VeryComplicated
+
 # 2.mysql服务配置
 # 默认引擎
 default_storage_engine=INNODB
@@ -61,4 +73,4 @@ redis_passwd=qaz123
 es_bind=0.0.0.0
 
 # 启动的服务
-services="mysql redis es es_head mongo"
+services="mysql redis es es_head mongo rabbitmq"

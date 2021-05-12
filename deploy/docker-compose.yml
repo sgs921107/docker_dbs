@@ -36,6 +36,8 @@ services:
             - dbs-redis:/data:rw
             - ${REDIS_CONF}:/etc/redis/redis.conf:ro
             - ${LOG_DIR:-/var/log/dbs}/redis:/logs:rw
+        environment:
+            TZ: Asia/Shanghai
         logging:
             driver: "json-file"
             options:
@@ -58,6 +60,8 @@ services:
             - dbs-es:/usr/share/elasticsearch/data:rw
             - ${ES_CONF}:/usr/share/elasticsearch/config/elasticsearch.yml:ro
             - ${LOG_DIR:-/var/log/dbs}/es:/usr/share/elasticsearch/logs:rw
+        environment:
+            TZ: Asia/Shanghai
         logging:
             driver: "json-file"
             options:
@@ -74,6 +78,8 @@ services:
             - ${REAL_ES_HEAD_PORT:-9100}:9100
         volumes:
             - ${LOG_DIR:-/var/log/dbs}/es_head:/logs
+        environment:
+            TZ: Asia/Shanghai
         logging:
             driver: "json-file"
             options:
@@ -92,6 +98,7 @@ services:
             - dbs-mongo:/data/db:rw
             - ${LOG_DIR:-/var/log/dbs}/mongo:/data/logs:rw
         environment:
+            TIME_ZONE: Asia/Shanghai
             MONGO_INITDB_DATABASE: testDB
             MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
             MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
@@ -104,6 +111,30 @@ services:
         networks:
             - dbs
 
+    rabbitmq:
+        image: rabbitmq:${RABBITMQ_VERSION:-3.8.16-management}
+        container_name: rabbitmq_${RABBITMQ_VERSION:-3.8.16-management}
+        ports:
+            - ${REAL_RABBITMQ_PORT:-5672}:5672
+            - ${REAL_RABBITMQ_ADMIN_PORT:-15672}:15672
+        volumes:
+            - dbs-rabbitmq:/var/lib/rabbitmq:rw
+            - ${LOG_DIR:-/var/log/dbs}/rabbitmq:/var/log/rabbitmq/log:rw
+        environment:
+            TIME_ZONE: Asia/Shanghai
+            RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "200m"
+                max-file: "3"
+        restart: always
+        networks:
+            - dbs
+
+
 networks:
     dbs:
         ipam:
@@ -115,3 +146,4 @@ volumes:
     dbs-redis: {}
     dbs-es: {}
     dbs-mongo: {}
+    dbs-rabbitmq: {}
