@@ -1,76 +1,57 @@
-# 日志将存储至宿主机的此目录下
-DBS_LOG_DIR=/var/log/dbs
+COMPOSE_PROJECT_NAME=dbs
+# 宿主机中的日志目录
+HOST_LOG_DIR=/var/log/dbs
+# 宿主机中的项目目录
+HOST_PROJECT_DIR=/data/docker_dbs
+# 要启动的db服务
+DB_SERVERS="mysql redis es es_head mongo rabbitmq"
 
-# 1.docker-compose.yml依赖配置
+
 # mysql 版本
 MYSQL_VERSION=5.7
-# 宿主机mysql服务端口
-REAL_MYSQL_PORT=3306
-# mysql root密码
+# mysql配置文件在宿主机中的地址
+HOST_MYSQL_CONF=/etc/dbs/my.cnf
+# mysql服务在宿主机中的端口
+HOST_MYSQL_PORT=3306
+# root密码
 MYSQL_ROOT_PASSWORD=123456
-# 允许使用root用户访问mysql的ip地址
+# 允许访问登录root账户的主机
 MYSQL_ROOT_HOST=localhost
 
-# redis 版本
+# redis版本
 REDIS_VERSION=5.0.12
-# 宿主机redis服务端口
-REAL_REDIS_PORT=6379
+# redis配置文件在宿主机中的地址
+HOST_REDIS_CONF=/etc/dbs/redis.conf
+# redis服务在宿主机中的端口
+HOST_REDIS_PORT=6379
 
-# es 版本
+# es版本
 ES_VERSION=6.6.2
-# 宿主机redis服务端口
-REAL_ES_HTTP_PORT=9200
-REAL_ES_TCP_PORT=9300
+# es配置文件在宿主机中的地址
+HOST_ES_CONF=/etc/dbs/elasticsearch0.yml
+# es服务在宿主机中的tcp端口
+HOST_ES_TCP_PORT=9300
+# es服务在宿主机中的http端口
+HOST_ES_HTTP_PORT=9200
 
-# es_head 版本
+# es_head版本
 ES_HEAD_VERSION=5
-# 宿主机redis服务端口
-REAL_ES_HEAD_PORT=9100
+# es head服务在宿主机中的端口
+HOST_ES_HEAD_PORT=9100
 
-# mongo 版本
+# mongo版本
 MONGO_VERSION=4.4.5
-# 宿主机mongo服务端口
-REAL_MONGO_PORT=27017
-# mongo root username
 MONGO_ROOT_USERNAME=admin
-# mongo root password
 MONGO_ROOT_PASSWORD=123456
+# mongo服务在宿主机中的端口
+HOST_MONGO_PORT=27017
 
-# rabbitmq 版本
+# rabbit版本
 RABBITMQ_VERSION=3.8.16-management
-# 宿主机rabbitmq服务端口
-REAL_RABBITMQ_PORT=5672
-# 宿主机rabbitmq后台管理端口
-REAL_RABBITMQ_ADMIN_PORT=15672
-# rabbitmq后台管理账号密码
+# rabbit服务在宿主机中的端口
+HOST_RABBITMQ_PORT=5672
+# rabbit后台服务在宿主机中的端口
+HOST_RABBITMQ_ADMIN_PORT=15672
 RABBITMQ_DEFAULT_USER=work
 RABBITMQ_DEFAULT_PASS=online
-# erlang cookie
 RABBITMQ_ERLANG_COOKIE=VeryComplicated
-
-# 2.mysql服务配置
-# 默认引擎
-default_storage_engine=INNODB
-# 默认时区
-default_time_zone='+8:00'
-# 事务超时后的回滚策略
-innodb_rollback_on_timeout='ON'
-# 最大连接数
-max_connections=2048
-# 事务超时时间
-innodb_lock_wait_timeout=50
-# 处理时间超过多少秒标记为慢查询
-long_query_time=1
-mysql_bind=0.0.0.0
-
-# 3.redis服务配置
-redis_bind=0.0.0.0
-# 是否持久化
-appendonly=yes
-redis_passwd=qaz123
-
-# 4.es服务配置
-es_bind=0.0.0.0
-
-# 启动的服务
-services="mysql redis es es_head mongo rabbitmq"
