@@ -3,9 +3,14 @@ COMPOSE_PROJECT_NAME=dbs
 HOST_LOG_DIR=/var/log/dbs
 # 宿主机中的项目目录
 HOST_PROJECT_DIR=/data/docker_dbs
-# 要启动的db服务
-DB_SERVERS="mysql redis es es_head mongo rabbitmq"
 
+# 启动的服务 1(启动)/其它(不启动)
+SERVICE_MYSQL=1
+SERVICE_REDIS=1
+SERVICE_ES=1
+SERVICE_ES_HEAD=1
+SERVICE_MONGO=1
+SERVICE_RABBITMQ=1
 
 # mysql 版本
 MYSQL_VERSION=5.7
