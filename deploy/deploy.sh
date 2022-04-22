@@ -24,26 +24,24 @@
 #   && cp ../conf/env_demo /etc/dbs/.env
 # =================================================================================
 
-source /etc/dbs/.env
+# -----------------------------------------------------------------
+HOST_ENV_PATH=/etc/dbs/.env
+source $HOST_ENV_PATH
+
+# 部署目录
+DEPLOY_DIR=$HOST_PROJECT_DIR/deploy
+
+# -------------------------------- 开始部署 --------------------------
 
 # 进入部署目录
-cd $HOST_PROJECT_DIR/deploy
+cd $DEPLOY_DIR || { echo "部署失败: 进入项目部署目录失败, 请校验您的配置"; exit 1; }
 
 # 安装docker服务
 sh install_docker.sh || { echo "部署失败: 安装docker失败,请检查是否缺少依赖并重新运行部署脚本"; exit 1; }
 
 # 将.env链接至部署目录
-ln -s /etc/dbs/.env $HOST_PROJECT_DIR/deploy/.env
-
+ln -f $HOST_ENV_PATH $HOST_PROJECT_DIR/deploy/.env
 
 # 启动服务
-for service in mysql redis es es_head mongo rabbitmq
-do
-    switch=`echo service_$service | tr a-z A-Z`
-    if [ "$(eval echo \$$switch)" == "1" ]
-    then
-        docker-compose up -d $service \
-        && { echo "启动"$service"服务成功"; docker-compose logs  --tail 10 $service; } \
-        || echo "启动服务"$service"失败!!!"
-    fi
-done
+sh docker-compose-up.sh
+echo "====================== deploy done ========================="

@@ -7,7 +7,7 @@ services:
 
     mysql:
         image: mysql:${MYSQL_VERSION:-5.7}
-        container_name: mysql_${MYSQL_VERSION:-5.7}
+        hostname: mysql
         ports:
             - ${HOST_MYSQL_PORT:-3306}:3306
         volumes:
@@ -25,11 +25,11 @@ services:
                 max-file: "3"
         restart: always
         networks:
-            - dbs
+            - front
 
     redis:
         image: redis:${REDIS_VERSION:-5.0.12}
-        container_name: redis_${REDIS_VERSION:-5.0.12}
+        hostname: redis
         ports:
             - ${HOST_REDIS_PORT:-6379}:6379
         volumes:
@@ -50,11 +50,11 @@ services:
             - |
                 redis-server /etc/redis/redis.conf
         networks:
-            - dbs
+            - front
 
     es:
         image: elasticsearch:${ES_VERSION:-6.6.2}
-        container_name: es_${ES_VERSION:-6.6.2}
+        hostname: es
         privileged: true
         user: root
         ports:
@@ -73,11 +73,11 @@ services:
                 max-file: "3"
         restart: always
         networks:
-            - dbs
+            - front
 
     es_head:
         image: mobz/elasticsearch-head:${ES_HEAD_VERSION:-5}
-        container_name: es_head_${ES_HEAD_VERSION:-5}
+        hostname: es_head
         ports:
             - ${HOST_ES_HEAD_PORT:-9100}:9100
         volumes:
@@ -91,11 +91,11 @@ services:
                 max-file: "3"
         restart: always
         networks:
-            - dbs
+            - front
 
     mongo:
         image: mongo:${MONGO_VERSION:-4.4.5}
-        container_name: mongo_${MONGO_VERSION:-4.4.5}
+        hostname: mongo
         ports:
             - ${HOST_MONGO_PORT:-27017}:27017
         volumes:
@@ -113,11 +113,11 @@ services:
                 max-file: "3"
         restart: always
         networks:
-            - dbs
+            - front
 
     rabbitmq:
         image: rabbitmq:${RABBITMQ_VERSION:-3.8.16-management}
-        container_name: rabbitmq_${RABBITMQ_VERSION:-3.8.16-management}
+        hostname: rabbitmq
         ports:
             - ${HOST_RABBITMQ_PORT:-5672}:5672
             - ${HOST_RABBITMQ_ADMIN_PORT:-15672}:15672
@@ -136,11 +136,11 @@ services:
                 max-file: "3"
         restart: always
         networks:
-            - dbs
+            - front
 
 
 networks:
-    dbs:
+    front:
         ipam:
             driver: default
 
