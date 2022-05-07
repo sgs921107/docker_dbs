@@ -33,7 +33,7 @@ HOST_REDIS_PORT=6379
 # es版本
 ES_VERSION=6.6.2
 # es配置文件在宿主机中的地址
-HOST_ES_CONF=/etc/dbs/elasticsearch0.yml
+HOST_ES_CONF=/etc/dbs/elasticsearch.yml
 # es服务在宿主机中的tcp端口
 HOST_ES_TCP_PORT=9300
 # es服务在宿主机中的http端口
