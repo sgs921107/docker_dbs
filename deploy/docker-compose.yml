@@ -13,7 +13,7 @@ services:
         volumes:
             - dbs-mysql:/var/lib/mysql:rw
             - ${HOST_MYSQL_CONF}:/etc/mysql/my.cnf:ro
-            - ${HOST_LOG_DIR:-/var/log/dbs}/mysql:/logs:rw
+            - ${HOST_LOG_DIR:-/var/log/dbs}/mysql:/var/log/mysql:rw
         environment:
             TZ: Asia/Shanghai
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
