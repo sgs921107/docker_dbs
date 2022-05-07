@@ -110,7 +110,7 @@ services:
             - ${HOST_MONGO_PORT:-27017}:27017
         volumes:
             - dbs-mongo:/data/db:rw
-            - ${HOST_LOG_DIR:-/var/log/dbs}/mongo:/data/logs:rw
+            - ${HOST_LOG_DIR:-/var/log/dbs}/mongo:/var/log/mongodb:rw
         environment:
             TIME_ZONE: Asia/Shanghai
             MONGO_INITDB_DATABASE: testDB
