@@ -20,7 +20,7 @@
 #   && mkdir /etc/dbs \
 #   && cp ../conf/my.cnf.demo /etc/dbs/my.cnf \
 #   && cp ../conf/redis.conf.demo /etc/dbs/redis.conf \
-#   && cp ../conf/elasticsearch0.yml.demo /etc/dbs/elasticsearch0.yml \
+#   && cp ../conf/elasticsearch.yml.demo /etc/dbs/elasticsearch.yml \
 #   && cp ../conf/env_demo /etc/dbs/.env
 # =================================================================================
 

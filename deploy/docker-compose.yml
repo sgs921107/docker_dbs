@@ -13,11 +13,17 @@ services:
         volumes:
             - dbs-mysql:/var/lib/mysql:rw
             - ${HOST_MYSQL_CONF}:/etc/mysql/my.cnf:ro
-            - ${HOST_LOG_DIR:-/var/log/dbs}/mysql:/logs:rw
+            - ${HOST_LOG_DIR:-/var/log/dbs}/mysql:/var/log/mysql:rw
         environment:
             TZ: Asia/Shanghai
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
             MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST:-localhost}
+        entrypoint:
+            - /bin/bash
+            - -c
+            - |
+                chmod a+w /var/log/mysql
+                docker-entrypoint.sh mysqld
         logging:
             driver: "json-file"
             options:
@@ -55,8 +61,6 @@ services:
     es:
         image: elasticsearch:${ES_VERSION:-6.6.2}
         hostname: es
-        privileged: true
-        user: root
         ports:
             - ${HOST_ES_HTTP_PORT:-9200}:9200
             - ${HOST_ES_TCP_PORT:-9300}:9300
@@ -66,6 +70,12 @@ services:
             - ${HOST_LOG_DIR:-/var/log/dbs}/es:/usr/share/elasticsearch/logs:rw
         environment:
             TZ: Asia/Shanghai
+        entrypoint:
+            - /bin/bash
+            - -c
+            - |
+                chmod a+w /usr/share/elasticsearch/logs
+                /usr/local/bin/docker-entrypoint.sh eswrapper
         logging:
             driver: "json-file"
             options:
@@ -80,8 +90,8 @@ services:
         hostname: es_head
         ports:
             - ${HOST_ES_HEAD_PORT:-9100}:9100
-        volumes:
-            - ${HOST_LOG_DIR:-/var/log/dbs}/es_head:/logs:rw
+        # volumes:
+        #     - ${HOST_LOG_DIR:-/var/log/dbs}/es_head:/logs:rw
         environment:
             TZ: Asia/Shanghai
         logging:
@@ -106,6 +116,12 @@ services:
             MONGO_INITDB_DATABASE: testDB
             MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
             MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+        entrypoint:
+            - /bin/bash
+            - -c
+            - |
+                chmod a+w /var/log/mongodb
+                docker-entrypoint.sh mongod -logpath=/var/log/mongodb/mongod.log -logRotate=reopen -logappend
         logging:
             driver: "json-file"
             options:
@@ -129,6 +145,12 @@ services:
             RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
             RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
             RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+        entrypoint:
+            - /bin/bash
+            - -c
+            - |
+                chmod a+w /var/log/rabbitmq/log
+                docker-entrypoint.sh rabbitmq-server
         logging:
             driver: "json-file"
             options:

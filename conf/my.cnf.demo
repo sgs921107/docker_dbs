@@ -11,12 +11,12 @@ explicit_defaults_for_timestamp=true
 skip_host_cache
 skip_name_resolve
 disable_partition_engine_check=1
-log_error=/logs/error.log
-slow_query_log_file=/logs/slow.log
+log_error=/var/log/mysql/error.log
+slow_query_log_file=/var/log/mysql/slow.log
 slow_query_log=on
 long_query_time=1
 general_log=off
-general_log_file=/logs/mysql.log
+general_log_file=/var/log/mysql/mysql.log
 log_bin=mysql_bin
 server_id=1
 expire_logs_days=14
