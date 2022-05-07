@@ -33,6 +33,10 @@ DEPLOY_DIR=$HOST_PROJECT_DIR/deploy
 
 # -------------------------------- 开始部署 --------------------------
 
+# 给所有用户添加宿主机日志目录的写权限
+mkdir -p $HOST_LOG_DIR
+chmod a+w $HOST_LOG_DIR
+
 # 进入部署目录
 cd $DEPLOY_DIR || { echo "部署失败: 进入项目部署目录失败, 请校验您的配置"; exit 1; }
 
