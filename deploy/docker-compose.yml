@@ -1,12 +1,12 @@
 # 配置文件版本
-version: "3"
+# version: "3"
 
 
 # 管理的服务
 services:
 
     mysql:
-        image: mysql:${MYSQL_VERSION:-5.7}
+        image: mysql:${MYSQL_VERSION:-8.0}
         hostname: mysql
         ports:
             - ${HOST_MYSQL_PORT:-3306}:3306
@@ -34,7 +34,7 @@ services:
             - front
 
     redis:
-        image: redis:${REDIS_VERSION:-5.0.12}
+        image: redis:${REDIS_VERSION:-7.4}
         hostname: redis
         ports:
             - ${HOST_REDIS_PORT:-6379}:6379
@@ -90,8 +90,6 @@ services:
         hostname: es_head
         ports:
             - ${HOST_ES_HEAD_PORT:-9100}:9100
-        # volumes:
-        #     - ${HOST_LOG_DIR:-/var/log/dbs}/es_head:/logs:rw
         environment:
             TZ: Asia/Shanghai
         logging:
@@ -121,7 +119,7 @@ services:
             - -c
             - |
                 chmod a+w /var/log/mongodb
-                docker-entrypoint.sh mongod -logpath=/var/log/mongodb/mongod.log -logRotate=reopen -logappend
+                docker-entrypoint.sh mongod --logpath=/var/log/mongodb/mongod.log --logRotate=reopen --logappend --auth
         logging:
             driver: "json-file"
             options:

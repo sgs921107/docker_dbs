@@ -1,6 +1,6 @@
 daemonize no
 port 6379
-requirepass qaz123
+requirepass online
 bind 0.0.0.0
 appendonly yes
 

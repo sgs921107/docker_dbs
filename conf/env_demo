@@ -2,7 +2,7 @@ COMPOSE_PROJECT_NAME=dbs
 # 宿主机中的日志目录
 HOST_LOG_DIR=/var/log/dbs
 # 宿主机中的项目目录
-HOST_PROJECT_DIR=/data/docker_dbs
+HOST_PROJECT_DIR=/app/docker_dbs
 
 # 启动的服务 1(启动)/其它(不启动)
 SERVICE_MYSQL=1
@@ -13,7 +13,7 @@ SERVICE_MONGO=1
 SERVICE_RABBITMQ=1
 
 # mysql 版本
-MYSQL_VERSION=5.7
+MYSQL_VERSION=8.0
 # mysql配置文件在宿主机中的地址
 HOST_MYSQL_CONF=/etc/dbs/my.cnf
 # mysql服务在宿主机中的端口
@@ -24,7 +24,7 @@ MYSQL_ROOT_PASSWORD=123456
 MYSQL_ROOT_HOST=localhost
 
 # redis版本
-REDIS_VERSION=5.0.12
+REDIS_VERSION=7.4
 # redis配置文件在宿主机中的地址
 HOST_REDIS_CONF=/etc/dbs/redis.conf
 # redis服务在宿主机中的端口

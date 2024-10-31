@@ -10,7 +10,8 @@ init_connect='SET NAMES utf8mb4'
 explicit_defaults_for_timestamp=true
 skip_host_cache
 skip_name_resolve
-disable_partition_engine_check=1
+# version 5.7
+# disable_partition_engine_check=1
 log_error=/var/log/mysql/error.log
 slow_query_log_file=/var/log/mysql/slow.log
 slow_query_log=on
